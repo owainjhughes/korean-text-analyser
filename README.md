@@ -1,0 +1,3 @@
+﻿# Korean Text Analyser
+
+ ## Stack: Django, PostgreSQL, BootStrap
