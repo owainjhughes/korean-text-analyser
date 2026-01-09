@@ -1,0 +1,21 @@
+{% extends "classifier/base.html" %}
+
+{% block title %}About{% endblock %}
+{% block content %}
+<h1 class="mb-4 text-center fw-bold">About</h1>
+This is the About page for the Korean Text Difficulty Classifier application. It provides information about the project, its purpose, and how to use it.
+
+<h2>What is it?</h2>
+The Korean Text Difficulty Classifier is a web application designed to analyze Korean text and classify the difficulty level of words based on their usage in elementary, middle school, and high school contexts. It uses natural language processing techniques to provide insights into the complexity of the text.
+
+<h2>Purpose:</h2>
+The purpose of this application is to help users understand the difficulty level of Korean words, which can be useful for educators, students, and language learners. By analyzing text, users can identify which words are commonly used at different educational levels and adjust their learning materials accordingly.
+
+<h2>How to use</h2>
+1. Navigate to the Classifier page.
+2. Enter Korean text in the provided text area.
+3. Click the "Analyze" button to classify the words in the text.
+
+<h2>How does it Work?</h2>
+The application uses the Okt tokenizer from the KoNLPy library to tokenize Korean text. It then classifies each word based on its grade level using the information gleaned from the <a href="https://krdict.korean.go.kr/"></a>KRDict OpenAPI</a></a> . The results are displayed in a table format, showing the words classified into elementary, middle school, high school, and other categories.
+{% endblock %}
