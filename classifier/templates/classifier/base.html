@@ -10,7 +10,7 @@
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
-    <div class="container">
+    <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="{% url 'index' %}">KorClass</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,9 +21,9 @@
                 <li class="nav-item">
                     <a class="nav-link{% if request.resolver_match.url_name == 'index' %} active{% endif %}" href="{% url 'index' %}">Classifier</a>
                 </li>
-                <li class="nav-item">
+               <!-- <li class="nav-item">
                     <a class="nav-link{% if request.resolver_match.url_name == 'register' %} active{% endif %}" href="{% url 'register' %}">Register</a>
-                </li>
+                </li>-->
                 <li class="nav-item">
                     <a class="nav-link{% if request.resolver_match.url_name == 'about' %} active{% endif %}" href="{% url 'about' %}">About</a>
                 </li>
