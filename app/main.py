@@ -34,6 +34,10 @@ async def index_post(request: Request, text: str = Form("")):
     )
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a1ce224cb2b372bf55f1a5b7d928e844183b07ce
 @app.get("/health")
 async def health():
     return {"status": "ok"}

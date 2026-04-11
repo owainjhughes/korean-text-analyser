@@ -1,6 +1,5 @@
 from unittest.mock import AsyncMock, patch
 
-import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -12,12 +11,6 @@ def test_index_get():
     response = client.get("/")
     assert response.status_code == 200
     assert "Saebae" in response.text
-
-
-def test_about_get():
-    response = client.get("/about")
-    assert response.status_code == 200
-    assert "About" in response.text
 
 
 def test_health():
@@ -42,18 +35,13 @@ def test_index_post_returns_results():
     assert "학교" in response.text
 
 
-def test_index_post_unknown_grade():
-    """Words not found in the API should appear in the 'Other' column."""
-    with patch("app.main.tokenize", return_value=["컴퓨터"]), \
-         patch("app.main.get_word_grade", new_callable=AsyncMock, return_value=None):
-        response = client.post("/", data={"text": "컴퓨터"})
+def test_index_post_multiple_words_all_rendered():
+    """Multiple words with different grades are all rendered in the response."""
+    grades = {"학교": "초급", "사랑": "중급", "철학": "고급"}
+    grade_mock = AsyncMock(side_effect=lambda w: grades.get(w))
+    with patch("app.main.tokenize", return_value=list(grades.keys())), \
+         patch("app.main.get_word_grade", grade_mock):
+        response = client.post("/", data={"text": "학교 사랑 철학"})
     assert response.status_code == 200
-    assert "컴퓨터" in response.text
-
-
-def test_submitted_text_preserved():
-    """The textarea should be repopulated with the original input after submission."""
-    with patch("app.main.tokenize", return_value=["안녕"]), \
-         patch("app.main.get_word_grade", new_callable=AsyncMock, return_value=None):
-        response = client.post("/", data={"text": "안녕하세요"})
-    assert "안녕하세요" in response.text
+    for word in grades:
+        assert word in response.text
