@@ -2,7 +2,6 @@ from pathlib import Path
 
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.dictionary import get_word_grade
@@ -12,7 +11,6 @@ app = FastAPI(title="Korean Difficulty Classifier")
 
 BASE_DIR = Path(__file__).resolve().parent
 
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
@@ -26,7 +24,7 @@ async def index(request: Request):
 @app.post("/", response_class=HTMLResponse)
 async def index_post(request: Request, text: str = Form("")):
     words = tokenize(text)
-    # Sequential calls — KRDict rate-limits burst concurrent requests
+    # sequential calls — KRDict rate-limits burst concurrent requests
     result = []
     for word in words:
         grade = await get_word_grade(word)

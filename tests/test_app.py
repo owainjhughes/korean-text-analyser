@@ -11,7 +11,7 @@ client = TestClient(app)
 def test_index_get():
     response = client.get("/")
     assert response.status_code == 200
-    assert "Korean Text Difficulty Classifier" in response.text
+    assert "Saebae" in response.text
 
 
 def test_about_get():
