@@ -34,10 +34,6 @@ async def index_post(request: Request, text: str = Form("")):
     )
 
 
-@app.get("/about", response_class=HTMLResponse)
-async def about(request: Request):
-    return templates.TemplateResponse(request, "about.html")
-
 
 @app.get("/health")
 async def health():

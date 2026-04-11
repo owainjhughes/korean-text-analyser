@@ -14,11 +14,6 @@ def test_index_get():
     assert "Saebae" in response.text
 
 
-def test_about_get():
-    response = client.get("/about")
-    assert response.status_code == 200
-    assert "About" in response.text
-
 
 def test_health():
     response = client.get("/health")
