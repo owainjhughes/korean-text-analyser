@@ -34,10 +34,11 @@ async def index_post(request: Request, text: str = Form("")):
     )
 
 
-<<<<<<< HEAD
-=======
+@app.get("/about", response_class=HTMLResponse)
+async def about(request: Request):
+    return templates.TemplateResponse(request, "about.html", context={})
 
->>>>>>> a1ce224cb2b372bf55f1a5b7d928e844183b07ce
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
