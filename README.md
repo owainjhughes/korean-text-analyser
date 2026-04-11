@@ -1,3 +1,3 @@
 ﻿# Korean Text Analyser
 
- ## Stack: Django, PostgreSQL, BootStrap
+ ## Stack: FastAPI, Tailwind

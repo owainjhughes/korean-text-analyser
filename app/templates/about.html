@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center fw-bold">About</h1>
+
+<h2>How to use</h2>
+<p>
+    1. Navigate to the Classifier page.<br>
+    2. Enter Korean text in the provided text area.<br>
+    3. Click the "Analyze" button to classify the words in the text.
+</p>
+
+<h2>How does it work?</h2>
+<p>
+    The application uses the Okt tokenizer from the KoNLPy library to tokenize Korean text.
+    It then classifies each word based on its grade level using the
+    <a href="https://krdict.korean.go.kr/">KRDict OpenAPI</a>.
+    The results are displayed in a table showing words classified into
+    elementary, middle school, high school, and other categories.
+</p>
+{% endblock %}

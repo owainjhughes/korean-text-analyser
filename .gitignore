@@ -1,1 +1,16 @@
 .env
+/.github/OBUCON_STYLE_GUIDE.md
+/.github/API_TEMPLATE.md
+
+# IDE
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Terraform
+**/*.tfvars
+**/.terraform/
+**/.terraform.lock.hcl
