@@ -1,0 +1,96 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: eu-west-2
+      ECR_REPO: korclass
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        id: build
+        run: |
+          set -euo pipefail
+          IMAGE="${{ steps.ecr.outputs.registry }}/${ECR_REPO}"
+          SHA_TAG="sha-${GITHUB_SHA::12}"
+          docker build -t "$IMAGE:$SHA_TAG" -t "$IMAGE:latest" .
+          docker push "$IMAGE:$SHA_TAG"
+          docker push "$IMAGE:latest"
+          echo "sha_tag=$SHA_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger pull-and-restart on EC2 via SSM
+        id: ssm
+        env:
+          INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+          SHA_TAG: ${{ steps.build.outputs.sha_tag }}
+        run: |
+          set -euo pipefail
+          CMD_ID=$(aws ssm send-command \
+            --document-name AWS-RunShellScript \
+            --instance-ids "$INSTANCE_ID" \
+            --comment "deploy $SHA_TAG" \
+            --parameters "{\"commands\":[\"/opt/korclass/pull-and-restart.sh $SHA_TAG\"]}" \
+            --query Command.CommandId --output text)
+          echo "cmd_id=$CMD_ID" >> "$GITHUB_OUTPUT"
+          echo "Sent SSM command $CMD_ID"
+
+      - name: Wait for SSM command and surface output
+        env:
+          INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+          CMD_ID: ${{ steps.ssm.outputs.cmd_id }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 60); do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+              --query Status --output text 2>/dev/null || echo Pending)
+            case "$STATUS" in
+              Success|Cancelled|TimedOut|Failed) break ;;
+              *) sleep 5 ;;
+            esac
+          done
+
+          echo "::group::SSM stdout"
+          aws ssm get-command-invocation \
+            --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+            --query StandardOutputContent --output text || true
+          echo "::endgroup::"
+
+          echo "::group::SSM stderr"
+          aws ssm get-command-invocation \
+            --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+            --query StandardErrorContent --output text || true
+          echo "::endgroup::"
+
+          echo "Final status: $STATUS"
+          [ "$STATUS" = "Success" ] || exit 1

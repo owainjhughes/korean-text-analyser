@@ -1,4 +1,5 @@
 import csv
+import math
 from pathlib import Path
 
 # api imports — kept for potential future use
@@ -18,19 +19,24 @@ _LEVEL_MAP: dict[str, str] = {"A": "초급", "B": "중급", "C": "고급", "D": 
 _DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "kengdic_graded.tsv"
 
 _cache: dict[str, str | None] = {}
+_entries: list[dict[str, str]] = []
 
 
 def _load_tsv() -> None:
     # load graded words from local tsv into cache at startup
+    _cache.clear()
+    _entries.clear()
     with open(_DATA_FILE, encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter="\t")
         for row in reader:
             word = row.get("surface", "").strip()
+            gloss = row.get("gloss", "").strip()
             level = row.get("level", "").strip()
             if word and level and word not in _cache:
                 grade = _LEVEL_MAP.get(level)
                 if grade:
                     _cache[word] = grade
+                    _entries.append({"word": word, "gloss": gloss, "grade": grade})
 
 
 _load_tsv()
@@ -38,6 +44,13 @@ _load_tsv()
 
 async def get_word_grade(word: str) -> str | None:
     return _cache.get(word)
+
+
+def list_entries(page: int = 1, per_page: int = 15) -> tuple[list[dict[str, str]], int, int]:
+    total_pages = max(1, math.ceil(len(_entries) / per_page))
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * per_page
+    return _entries[start : start + per_page], page, total_pages
 
     # api fallback — uncomment if tsv coverage proves insufficient
     # if not settings.api_key:

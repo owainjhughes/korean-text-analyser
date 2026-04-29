@@ -1,22 +1,25 @@
-<nav class="bg-gray-100 text-gray-900">
+{% set p = request.url.path %}
+<nav class="bg-white border-b border-gray-200">
   <div class="mx-auto max-w-6xl px-4">
-    <div class="flex h-14 items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="text-sm font-semibold text-gray-900">Saebae</span>
+    <div class="flex h-14 items-stretch gap-2">
+      <div class="flex shrink-0 items-center">
+        <span class="text-sm font-semibold text-gray-900 tracking-wide">Saebae</span>
       </div>
-      <div class="hidden sm:flex items-center gap-4">
-        <a href="/"
-           class="text-sm font-medium {% if request.url.path == '/' %}text-black{% else %}text-gray-600 hover:text-gray-800{% endif %}">
-          Home
-        </a>
-        <a href="/about"
-           class="text-sm font-medium {% if request.url.path == '/about' %}text-black{% else %}text-gray-600 hover:text-gray-800{% endif %}">
-          About
-        </a>
-        <a href="https://obucon.com" target="_blank" rel="noopener noreferrer"
-           class="text-sm font-medium text-gray-600 hover:text-gray-800">
-          ObuCon
-        </a>
+      <div class="hidden sm:ml-6 sm:flex sm:items-stretch">
+        <div class="flex items-stretch gap-1">
+          <a href="/"
+             class="inline-flex items-center px-3 text-sm font-medium border-b-2 transition-colors {% if p == '/' %}border-[#55F] text-[#55F]{% else %}border-transparent text-gray-500 hover:text-gray-900{% endif %}">
+            Home
+          </a>
+          <a href="/analyze"
+             class="inline-flex items-center px-3 text-sm font-medium border-b-2 transition-colors {% if p == '/analyze' %}border-[#55F] text-[#55F]{% else %}border-transparent text-gray-500 hover:text-gray-900{% endif %}">
+            Analyze
+          </a>
+          <a href="/dictionary"
+             class="inline-flex items-center px-3 text-sm font-medium border-b-2 transition-colors {% if p.startswith('/dictionary') %}border-[#55F] text-[#55F]{% else %}border-transparent text-gray-500 hover:text-gray-900{% endif %}">
+            Dictionary
+          </a>
+        </div>
       </div>
     </div>
   </div>

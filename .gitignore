@@ -18,3 +18,4 @@ __pycache__/
 **/*.tfstate.*
 **/*.tfplan
 /infra/README.md
+/.claude

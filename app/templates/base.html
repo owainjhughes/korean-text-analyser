@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Saebae{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script> // needed to match obucon font styling since tailwind is via cdn instead of npm
+  <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['-apple-system', 'BlinkMacSystemFont', "'Segoe UI'", 'Roboto',
+            sans: ['"Noto Sans KR"', '-apple-system', 'BlinkMacSystemFont', "'Segoe UI'", 'Roboto',
                    'Oxygen', 'Ubuntu', 'Cantarell', "'Fira Sans'", "'Droid Sans'",
                    "'Helvetica Neue'", 'sans-serif'],
           }
