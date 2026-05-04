@@ -3,7 +3,11 @@ set -euxo pipefail
 
 # ----- packages -----
 dnf update -y
-dnf install -y docker jq awscli-2
+dnf install -y docker jq awscli-2 amazon-ssm-agent
+
+# Ensure ssm-agent is running after install/update
+systemctl enable --now amazon-ssm-agent
+systemctl restart amazon-ssm-agent
 
 systemctl enable --now docker
 usermod -aG docker ec2-user
