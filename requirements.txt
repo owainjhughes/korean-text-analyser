@@ -6,5 +6,6 @@ httpx
 konlpy
 pydantic-settings
 python-dotenv
+python-jose[cryptography]
 pytest
 pytest-asyncio

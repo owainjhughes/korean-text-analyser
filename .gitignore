@@ -19,3 +19,4 @@ __pycache__/
 **/*.tfplan
 /infra/README.md
 /.claude
+/infra
