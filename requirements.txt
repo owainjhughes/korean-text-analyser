@@ -7,5 +7,11 @@ konlpy
 pydantic-settings
 python-dotenv
 python-jose[cryptography]
+sqlalchemy>=2.0
+asyncpg
+psycopg[binary]
+alembic
+passlib[bcrypt]
+email-validator
 pytest
 pytest-asyncio

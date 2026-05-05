@@ -1,16 +1,23 @@
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
 
 from fastapi import Depends, FastAPI, Form, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.auth import get_current_user, get_optional_user
+from app.auth import get_optional_user
 from app.dictionary import get_word_grade, list_entries
+from app.exceptions import RedirectToLogin
 from app.tokenizer import tokenize
 
 app = FastAPI(title="Korean Difficulty Classifier")
+
+
+@app.exception_handler(RedirectToLogin)
+async def _redirect_to_login(request: Request, exc: RedirectToLogin) -> RedirectResponse:
+    return RedirectResponse(url=f"/login?next={quote(exc.next_path)}", status_code=303)
 
 BASE_DIR = Path(__file__).resolve().parent
 
