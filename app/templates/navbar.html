@@ -37,6 +37,31 @@
         </a>
       </div>
 
+      <!-- desktop auth state -->
+      <div class="hidden sm:flex items-center gap-2 ml-4">
+        {% if user %}
+          <a href="/profile"
+             class="inline-flex items-center px-3 text-sm font-medium border-b-2 transition-colors {% if p == '/profile' %}border-[#55F] text-[#55F]{% else %}border-transparent text-gray-700 hover:text-gray-900{% endif %}">
+            Profile
+          </a>
+          <form method="POST" action="/logout" class="m-0">
+            <button type="submit"
+                    class="rounded-md border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+              Log out
+            </button>
+          </form>
+        {% else %}
+          <a href="/login"
+             class="text-sm font-medium text-gray-700 hover:text-gray-900 px-3">
+            Log in
+          </a>
+          <a href="/register"
+             class="rounded-md bg-[#55F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#44E] transition-colors">
+            Register
+          </a>
+        {% endif %}
+      </div>
+
       <!-- mobile menu button -->
       <div class="flex items-center sm:hidden">
         <button type="button" id="mobile-menu-btn"
@@ -80,6 +105,27 @@
          class="block rounded-md px-3 py-2 text-sm font-medium {% if p.startswith('/dictionary') %}bg-[#55F]/10 text-[#55F]{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-900{% endif %}">
         Dictionary
       </a>
+      {% if user %}
+        <a href="/profile"
+           class="block rounded-md px-3 py-2 text-sm font-medium {% if p == '/profile' %}bg-[#55F]/10 text-[#55F]{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          Profile
+        </a>
+        <form method="POST" action="/logout" class="px-3 pt-1">
+          <button type="submit"
+                  class="block w-full rounded-md border border-gray-300 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            Log out
+          </button>
+        </form>
+      {% else %}
+        <a href="/login"
+           class="block rounded-md px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900">
+          Log in
+        </a>
+        <a href="/register"
+           class="block rounded-md bg-[#55F]/10 px-3 py-2 text-sm font-medium text-[#55F]">
+          Register
+        </a>
+      {% endif %}
     </div>
 
   </div>
@@ -89,9 +135,11 @@
   (function () {
     var btn = document.getElementById('mobile-menu-btn');
     var menu = document.getElementById('mobile-menu');
-    btn.addEventListener('click', function () {
-      var isHidden = menu.classList.toggle('hidden');
-      btn.setAttribute('aria-expanded', String(!isHidden));
-    });
+    if (btn && menu) {
+      btn.addEventListener('click', function () {
+        var isHidden = menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', String(!isHidden));
+      });
+    }
   }());
 </script>
