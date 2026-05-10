@@ -4,56 +4,61 @@
 
 {% block content %}
 <section class="mx-auto max-w-md px-4 py-12">
-  <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-    <h1 class="text-xl font-semibold text-gray-900">Create your account</h1>
-    <p class="mt-1 text-sm text-gray-600">One account works on Saebae and ObuCon.</p>
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <div class="h-1 bg-[#55F]"></div>
+    <div class="p-6">
+      <h1 class="text-2xl font-semibold text-gray-900">Create account</h1>
+      <p class="mt-1 text-sm text-gray-600">Register to save your vocabulary and analyses.</p>
 
-    {% if error %}
-    <div class="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
-      {{ error }}
+      <form method="POST" action="/register" class="mt-6 space-y-4">
+        <input type="hidden" name="next" value="{{ next }}">
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input id="email" name="email" type="email" required maxlength="255" autocomplete="email"
+                 value="{{ form.email or '' }}"
+                 placeholder="you@example.com"
+                 class="mt-2 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
+        </div>
+
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <input id="username" name="username" type="text" required maxlength="50" autocomplete="username"
+                 value="{{ form.username or '' }}"
+                 placeholder="3-50 characters"
+                 class="mt-2 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password"
+                 placeholder="Minimum 8 characters"
+                 class="mt-2 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
+        </div>
+
+        <div>
+          <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm password</label>
+          <input id="confirm_password" name="confirm_password" type="password" required minlength="8" autocomplete="new-password"
+                 class="mt-2 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
+        </div>
+
+        {% if error %}
+        <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <button type="submit"
+                class="w-full rounded-lg bg-[#55F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#44E] disabled:cursor-not-allowed disabled:opacity-70 transition-colors">
+          Register
+        </button>
+      </form>
+
+      <p class="mt-4 text-sm text-gray-600">
+        Already have an account?
+        <a href="/login?next={{ next | urlencode }}" class="font-semibold text-[#55F] hover:text-[#44E]">Log in</a>
+      </p>
     </div>
-    {% endif %}
-
-    <form method="POST" action="/register" class="mt-6 space-y-4">
-      <input type="hidden" name="next" value="{{ next }}">
-
-      <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input id="email" name="email" type="email" required maxlength="255" autocomplete="email"
-               value="{{ form.email or '' }}"
-               class="mt-1 w-full rounded-lg border border-gray-300 p-2 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
-      </div>
-
-      <div>
-        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-        <input id="username" name="username" type="text" required maxlength="50" autocomplete="username"
-               value="{{ form.username or '' }}"
-               class="mt-1 w-full rounded-lg border border-gray-300 p-2 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
-      </div>
-
-      <div>
-        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password"
-               class="mt-1 w-full rounded-lg border border-gray-300 p-2 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
-        <p class="mt-1 text-xs text-gray-500">At least 8 characters.</p>
-      </div>
-
-      <div>
-        <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm password</label>
-        <input id="confirm_password" name="confirm_password" type="password" required minlength="8" autocomplete="new-password"
-               class="mt-1 w-full rounded-lg border border-gray-300 p-2 text-sm text-gray-900 focus:border-[#55F] focus:outline-none">
-      </div>
-
-      <button type="submit"
-              class="w-full rounded-lg bg-[#55F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#44E] transition-colors">
-        Create account
-      </button>
-    </form>
-
-    <p class="mt-4 text-center text-sm text-gray-600">
-      Already have an account?
-      <a href="/login?next={{ next | urlencode }}" class="font-medium text-[#55F] hover:underline">Log in</a>
-    </p>
   </div>
 </section>
 {% endblock %}

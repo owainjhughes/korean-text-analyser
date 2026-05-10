@@ -46,11 +46,14 @@ async def get_word_grade(word: str) -> str | None:
     return _cache.get(word)
 
 
-def list_entries(page: int = 1, per_page: int = 15) -> tuple[list[dict[str, str]], int, int]:
-    total_pages = max(1, math.ceil(len(_entries) / per_page))
+def list_entries(
+    page: int = 1, per_page: int = 15
+) -> tuple[list[dict[str, str]], int, int, int]:
+    total_count = len(_entries)
+    total_pages = max(1, math.ceil(total_count / per_page))
     page = max(1, min(page, total_pages))
     start = (page - 1) * per_page
-    return _entries[start : start + per_page], page, total_pages
+    return _entries[start : start + per_page], page, total_pages, total_count
 
     # api fallback — uncomment if tsv coverage proves insufficient
     # if not settings.api_key:

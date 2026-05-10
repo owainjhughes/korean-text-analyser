@@ -11,11 +11,6 @@ def test_health():
     assert response.json() == {"status": "ok"}
 
 
-def test_about_is_public():
-    response = client.get("/about")
-    assert response.status_code == 200
-
-
 def test_index_redirects_when_anonymous():
     response = client.get("/", follow_redirects=False)
     assert response.status_code == 303

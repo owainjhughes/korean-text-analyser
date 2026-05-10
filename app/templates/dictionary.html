@@ -5,30 +5,40 @@
 {% block content %}
 <section class="mx-auto max-w-7xl px-4 py-10">
   <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-    <h1 class="text-xl font-semibold text-gray-900">Dictionary</h1>
-    <p class="mt-1 text-sm text-gray-600">All graded Korean words used by the Saebae analyser.</p>
+    <h1 class="text-xl font-semibold text-gray-900">Korean Dictionary</h1>
 
     <div class="mt-6 overflow-x-auto">
       <table class="w-full min-w-[600px] table-fixed border-collapse">
+        <colgroup>
+          <col style="width: 24%;">
+          <col style="width: 60%;">
+          <col style="width: 16%;">
+        </colgroup>
         <thead>
           <tr class="border-b-2 border-[#55F] bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <th class="px-4 py-3 w-1/4">Word</th>
-            <th class="px-4 py-3 w-1/2">Meaning</th>
-            <th class="px-4 py-3 w-1/4">Grade</th>
+            <th class="px-4 py-3">Word</th>
+            <th class="px-4 py-3">Meaning</th>
+            <th class="px-4 py-3">Grade</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
           {% for row in rows %}
           <tr class="hover:bg-gray-50 transition-colors">
-            <td class="px-4 py-3 font-semibold text-gray-900">{{ row.word }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ row.gloss }}</td>
+            <td class="px-4 py-3 font-semibold text-gray-900">
+              <div class="truncate" title="{{ row.word }}">{{ row.word }}</div>
+            </td>
+            <td class="px-4 py-3 text-gray-600">
+              <div class="truncate" title="{{ row.gloss or '' }}">{{ row.gloss or '—' }}</div>
+            </td>
             <td class="px-4 py-3">
               {% if row.grade == "초급" %}
-                <span class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">초급</span>
+                <span class="inline-block rounded px-1.5 py-0.5 text-xs font-bold bg-green-600 text-white">초급</span>
               {% elif row.grade == "중급" %}
-                <span class="inline-block rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">중급</span>
+                <span class="inline-block rounded px-1.5 py-0.5 text-xs font-bold bg-orange-500 text-white">중급</span>
               {% elif row.grade == "고급" %}
-                <span class="inline-block rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800">고급</span>
+                <span class="inline-block rounded px-1.5 py-0.5 text-xs font-bold bg-blue-700 text-white">고급</span>
+              {% else %}
+                <span class="text-gray-400">—</span>
               {% endif %}
             </td>
           </tr>
@@ -37,23 +47,33 @@
       </table>
     </div>
 
+    {% if not rows %}
+    <div class="mt-6 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+      No dictionary entries found.
+    </div>
+    {% endif %}
+
+    {% if total_pages > 1 %}
     <div class="mt-6 flex items-center justify-between">
       {% if page > 1 %}
         <a href="?page={{ page - 1 }}"
-           class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Prev</a>
+           class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">← Previous</a>
       {% else %}
-        <span class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 opacity-40 cursor-not-allowed">Prev</span>
+        <span class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 opacity-40 cursor-not-allowed">← Previous</span>
       {% endif %}
 
-      <div class="text-xs text-gray-500 tabular-nums">Page {{ page }} of {{ total_pages }}</div>
+      <div class="text-xs text-gray-500 tabular-nums">
+        {{ page }} / {{ total_pages }} &nbsp;·&nbsp; {{ total_count }} words
+      </div>
 
       {% if page < total_pages %}
         <a href="?page={{ page + 1 }}"
-           class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Next</a>
+           class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Next →</a>
       {% else %}
-        <span class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 opacity-40 cursor-not-allowed">Next</span>
+        <span class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 opacity-40 cursor-not-allowed">Next →</span>
       {% endif %}
     </div>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

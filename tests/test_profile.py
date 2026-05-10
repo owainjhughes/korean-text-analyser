@@ -37,7 +37,7 @@ def test_profile_renders_when_authed(client, clean_db):
 def test_update_username(client, clean_db):
     _register(client, email="frank@example.com", username="frank")
     response = client.post(
-        "/profile",
+        "/profile/username",
         data={"username": "francis"},
         follow_redirects=False,
     )
@@ -50,9 +50,8 @@ def test_update_username(client, clean_db):
 def test_change_password_requires_current_password(client, clean_db):
     _register(client, email="gina@example.com", username="gina", password="hunter2hunter2")
     response = client.post(
-        "/profile",
+        "/profile/password",
         data={
-            "username": "gina",
             "current_password": "wrongwrongwrong",
             "new_password": "newpasswordnew",
             "confirm_new_password": "newpasswordnew",
@@ -65,9 +64,8 @@ def test_change_password_requires_current_password(client, clean_db):
 def test_change_password_success(client, clean_db):
     _register(client, email="hank@example.com", username="hank", password="hunter2hunter2")
     response = client.post(
-        "/profile",
+        "/profile/password",
         data={
-            "username": "hank",
             "current_password": "hunter2hunter2",
             "new_password": "newpasswordnew",
             "confirm_new_password": "newpasswordnew",
@@ -93,9 +91,8 @@ def test_change_password_success(client, clean_db):
 def test_change_password_mismatched_confirm(client, clean_db):
     _register(client, email="ivy@example.com", username="ivy", password="hunter2hunter2")
     response = client.post(
-        "/profile",
+        "/profile/password",
         data={
-            "username": "ivy",
             "current_password": "hunter2hunter2",
             "new_password": "newpasswordnew",
             "confirm_new_password": "different",

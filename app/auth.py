@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import bcrypt
 from fastapi import Cookie, Header, HTTPException, Request, Response, status
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from app.config import settings
 from app.exceptions import RedirectToLogin
@@ -11,15 +11,23 @@ from app.exceptions import RedirectToLogin
 ALGORITHM = "HS256"
 COOKIE_NAME = "auth_token"
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt 4.x rejects inputs >72 bytes with ValueError; silently truncate.
+_BCRYPT_MAX_BYTES = 72
+
+
+def _to_bcrypt_input(password: str) -> bytes:
+    return password.encode("utf-8")[:_BCRYPT_MAX_BYTES]
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(_to_bcrypt_input(password), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
+    try:
+        return bcrypt.checkpw(_to_bcrypt_input(password), password_hash.encode("utf-8"))
+    except ValueError:
+        return False
 
 
 def issue_token(user_id: int, email: str) -> str:

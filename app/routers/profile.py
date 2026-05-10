@@ -29,8 +29,10 @@ def _render(
     user: dict,
     db_user: User,
     *,
-    error: Optional[str] = None,
-    notice: Optional[str] = None,
+    username_error: Optional[str] = None,
+    username_success: bool = False,
+    password_error: Optional[str] = None,
+    password_success: bool = False,
     status_code: int = 200,
 ) -> HTMLResponse:
     return templates.TemplateResponse(
@@ -39,8 +41,10 @@ def _render(
         context={
             "user": user,
             "db_user": db_user,
-            "error": error,
-            "notice": notice,
+            "username_error": username_error,
+            "username_success": username_success,
+            "password_error": password_error,
+            "password_success": password_success,
         },
         status_code=status_code,
     )
@@ -56,10 +60,43 @@ async def profile_get(
     return _render(request, user, db_user)
 
 
-@router.post("/profile", response_class=HTMLResponse)
-async def profile_post(
+@router.post("/profile/username", response_class=HTMLResponse)
+async def profile_username_post(
     request: Request,
     username: str = Form(...),
+    user: dict = Depends(require_user_html),
+    db: AsyncSession = Depends(get_db),
+):
+    db_user = await _load(db, user["user_id"])
+
+    new_username = username.strip()
+    if not new_username or len(new_username) > 50:
+        return _render(
+            request, user, db_user,
+            username_error="Username must be between 1 and 50 characters.",
+            status_code=400,
+        )
+
+    if new_username == db_user.username:
+        return _render(request, user, db_user, username_success=True)
+
+    db_user.username = new_username
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        return _render(
+            request, user, db_user,
+            username_error="That username is already taken.",
+            status_code=409,
+        )
+    await db.refresh(db_user)
+    return _render(request, user, db_user, username_success=True)
+
+
+@router.post("/profile/password", response_class=HTMLResponse)
+async def profile_password_post(
+    request: Request,
     current_password: str = Form(""),
     new_password: str = Form(""),
     confirm_new_password: str = Form(""),
@@ -68,43 +105,32 @@ async def profile_post(
 ):
     db_user = await _load(db, user["user_id"])
 
-    new_username = username.strip()
-    if not new_username or len(new_username) > 50:
-        return _render(request, user, db_user,
-                       error="Username must be between 1 and 50 characters.",
-                       status_code=400)
+    if not new_password:
+        return _render(
+            request, user, db_user,
+            password_error="New password is required.",
+            status_code=400,
+        )
+    if not current_password or not verify_password(current_password, db_user.password_hash):
+        return _render(
+            request, user, db_user,
+            password_error="Current password is incorrect.",
+            status_code=400,
+        )
+    if new_password != confirm_new_password:
+        return _render(
+            request, user, db_user,
+            password_error="New passwords do not match.",
+            status_code=400,
+        )
+    if len(new_password) < 8:
+        return _render(
+            request, user, db_user,
+            password_error="New password must be at least 8 characters.",
+            status_code=400,
+        )
 
-    changed = False
-
-    if new_username != db_user.username:
-        db_user.username = new_username
-        changed = True
-
-    if new_password:
-        if not current_password or not verify_password(current_password, db_user.password_hash):
-            return _render(request, user, db_user,
-                           error="Current password is incorrect.",
-                           status_code=400)
-        if new_password != confirm_new_password:
-            return _render(request, user, db_user,
-                           error="New passwords do not match.",
-                           status_code=400)
-        if len(new_password) < 8:
-            return _render(request, user, db_user,
-                           error="New password must be at least 8 characters.",
-                           status_code=400)
-        db_user.password_hash = hash_password(new_password)
-        changed = True
-
-    if not changed:
-        return _render(request, user, db_user, notice="Nothing to update.")
-
-    try:
-        await db.commit()
-    except IntegrityError:
-        await db.rollback()
-        return _render(request, user, db_user,
-                       error="That username is already taken.",
-                       status_code=409)
+    db_user.password_hash = hash_password(new_password)
+    await db.commit()
     await db.refresh(db_user)
-    return _render(request, user, db_user, notice="Profile updated.")
+    return _render(request, user, db_user, password_success=True)
