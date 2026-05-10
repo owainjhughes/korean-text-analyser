@@ -26,7 +26,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["./entrypoint.sh"]
+    command: ["sh", "-c", "python -m alembic upgrade head && exec python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
 
 volumes:
   postgres_data:
